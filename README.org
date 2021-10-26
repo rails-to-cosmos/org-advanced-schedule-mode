@@ -17,7 +17,7 @@
   :END:
 #+end_src
 
-3. Make it DONE and it should repeat on earliest date:
+3. Make it DONE and it should repeat on the earliest date:
 
 #+begin_src org
 ,* TODO Czech class
