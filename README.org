@@ -1,0 +1,32 @@
+#+TITLE: Advanced schedule
+#+AUTHOR: Dmitry Akatov
+#+EMAIL: akatovda@yandex.com
+
+1. Enable advanced schedule mode for all org-mode files:
+
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook #'org-advanced-schedule-mode)
+#+end_src
+
+2. Specify ADVANCED_SCHEDULE property for headline you want to repeat flexibly:
+
+#+begin_src org
+,* TODO Czech class
+  :PROPERTIES:
+  :ADVANCED_SCHEDULE: ["Mon 20:00-21:00" "Tue 20:00-21:00" "Thu 20:00-21:00"]
+  :END:
+#+end_src
+
+3. Make it DONE and it should repeat on earliest date:
+
+#+begin_src org
+,* TODO Czech class
+  SCHEDULED: <2021-10-26 Tue 20:00-21:00>
+  :PROPERTIES:
+  :ADVANCED_SCHEDULE: ["Mon 20:00-21:00" "Tue 20:00-21:00" "Thu 20:00-21:00"]
+  :LAST_REPEAT: [2021-10-26 Tue 14:11]
+  :END:
+  :LOGBOOK:
+  - State "DONE"       from "TODO"       [2021-10-26 Tue 14:11]
+  :END:
+#+end_src
