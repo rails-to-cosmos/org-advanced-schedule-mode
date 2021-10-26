@@ -1,16 +1,20 @@
 (require 'org)
 
+(cl-defun oasm:active-timestamp (str)
+  (let* ((default-time (org-current-time))
+         (decoded-time (decode-time default-time nil))
+         (analyzed-time (org-read-date-analyze str default-time decoded-time))
+         (encoded-time (apply #'encode-time analyzed-time)))
+    (format-time-string (org-time-stamp-format t) encoded-time)))
+
 (cl-defun oasm:cleanup (schedule)
   (mapcar #'(lambda (datestring)
               (s-replace-regexp "-[[:digit:]]\\{2\\}:[[:digit:]]\\{2\\}" "" datestring))
           schedule))
 
-(cl-defun oasm:schedule-to-timestamps (schedule)
-  (mapcar #'active-timestamp (oasm:cleanup schedule)))
-
 (cl-defun oasm:timediff (timestamp &optional (current-time (org-current-time)))
   (let* ((current-sec (time-to-seconds current-time))
-         (target-sec (org-time-string-to-seconds (active-timestamp timestamp)))
+         (target-sec (org-time-string-to-seconds (oasm:active-timestamp timestamp)))
          (diff-sec (- target-sec current-sec))
          (week (* 7 24 60 60)))
     (cond ((and (> diff-sec 0) (< diff-sec week)) diff-sec)
@@ -39,7 +43,8 @@
       (when-let (schedule (org-element-property :ADVANCED_SCHEDULE (org-element-at-point)))
         (let* ((to-state (or (org-entry-get nil "REPEAT_TO_STATE" 'selective)
 		             (and (stringp org-todo-repeat-to-state) org-todo-repeat-to-state)
-		             (and org-todo-repeat-to-state org-last-state)))
+		             (and org-todo-repeat-to-state org-last-state)
+                             "TODO"))
                (nearest (oasm:nearest schedule)))
 
           (when (or org-log-repeat
