@@ -36,41 +36,42 @@
       (unless (org-at-heading-p)
         (org-back-to-heading-or-point-min))
 
-      (let* ((todo-keyword "TODO")
-             (headline (org-element-at-point))
-             (nearest (when-let (schedule (org-element-property :ADVANCED_SCHEDULE headline))
-                        (oasm:nearest schedule))))
+      (when-let (schedule (org-element-property :ADVANCED_SCHEDULE (org-element-at-point)))
+        (let* ((to-state (or (org-entry-get nil "REPEAT_TO_STATE" 'selective)
+		             (and (stringp org-todo-repeat-to-state) org-todo-repeat-to-state)
+		             (and org-todo-repeat-to-state org-last-state)))
+               (nearest (oasm:nearest schedule)))
 
-        (when (or org-log-repeat
-	          (catch :clock
-		    (save-excursion
-		      (while (re-search-forward org-clock-line-re end t)
-		        (when (org-at-clock-log-p) (throw :clock t))))))
-          (org-entry-put nil "LAST_REPEAT" (format-time-string (org-time-stamp-format t t))))
+          (when (or org-log-repeat
+	            (catch :clock
+		      (save-excursion
+		        (while (re-search-forward org-clock-line-re end t)
+		          (when (org-at-clock-log-p) (throw :clock t))))))
+            (org-entry-put nil "LAST_REPEAT" (format-time-string (org-time-stamp-format t t))))
 
-        (when org-log-repeat
-          (if (or (memq 'org-add-log-note (default-value 'post-command-hook))
-	          (memq 'org-add-log-note post-command-hook))
-	      ;; We are already setup for some record.
-	      (when (eq org-log-repeat 'note)
-	        ;; Make sure we take a note, not only a time stamp.
-	        (setq org-log-note-how 'note))
-	    ;; Set up for taking a record.
-	    (org-add-log-setup 'state
-                               (car org-done-keywords)
-			       org-last-state
-			       org-log-repeat)))
+          (when org-log-repeat
+            (if (or (memq 'org-add-log-note (default-value 'post-command-hook))
+	            (memq 'org-add-log-note post-command-hook))
+	        ;; We are already setup for some record.
+	        (when (eq org-log-repeat 'note)
+	          ;; Make sure we take a note, not only a time stamp.
+	          (setq org-log-note-how 'note))
+	      ;; Set up for taking a record.
+	      (org-add-log-setup 'state
+                                 (car org-done-keywords)
+			         org-last-state
+			         org-log-repeat)))
 
-        ;; Time-stamps without a repeater are usually skipped.  However,
-        ;; a SCHEDULED time-stamp without one is removed, as they are no
-        ;; longer relevant.
-        (save-excursion
-          (let ((scheduled (org-entry-get (point) "SCHEDULED")))
-	    (when (and scheduled (not (string-match-p org-repeat-re scheduled)))
-	      (org-remove-timestamp-with-keyword org-scheduled-string))))
+          ;; Time-stamps without a repeater are usually skipped.  However,
+          ;; a SCHEDULED time-stamp without one is removed, as they are no
+          ;; longer relevant.
+          (save-excursion
+            (let ((scheduled (org-entry-get (point) "SCHEDULED")))
+	      (when (and scheduled (not (string-match-p org-repeat-re scheduled)))
+	        (org-remove-timestamp-with-keyword org-scheduled-string))))
 
-        (org-add-planning-info 'scheduled nearest)
-        (org-todo todo-keyword)))))
+          (org-add-planning-info 'scheduled nearest)
+          (org-todo to-state))))))
 
 (defvar org-advanced-schedule-mode-p nil)
 (define-minor-mode org-advanced-schedule-mode
