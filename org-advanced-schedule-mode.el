@@ -78,4 +78,4 @@
   nil nil nil
   (funcall (if org-advanced-schedule-mode #'add-hook #'remove-hook) 'org-trigger-hook #'oasm:trigger))
 
-(provide-me)
+(provide 'org-advanced-schedule-mode)
