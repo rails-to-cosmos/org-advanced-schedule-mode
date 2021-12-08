@@ -2,11 +2,11 @@
 
 (defvar-local -org-tss:local-timestamps '())
 
-(define-minor-mode org-tss "Handle multiple repeatable timestamps."
+(define-minor-mode org-tss-mode "Handle multiple repeatable timestamps."
   nil nil nil
   (cond
-    (org-tss (advice-add 'org-auto-repeat-maybe :before #'org-tss:capture)
-             (advice-add 'org-auto-repeat-maybe :after #'org-tss:restore))
+    (org-tss-mode (advice-add 'org-auto-repeat-maybe :before #'org-tss:capture)
+                  (advice-add 'org-auto-repeat-maybe :after #'org-tss:restore))
     (t (advice-remove 'org-auto-repeat-maybe #'org-tss:capture)
        (advice-remove 'org-auto-repeat-maybe #'org-tss:restore))))
 
@@ -37,4 +37,4 @@
                            (org-element-property :end ts*))
             (insert (org-element-property :raw-value ts))))))
 
-(provide 'org-advanced-schedule-mode)
+(provide 'org-tss-mode)

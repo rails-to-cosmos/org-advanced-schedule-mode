@@ -2,27 +2,27 @@
 #+AUTHOR: Dmitry Akatov
 #+EMAIL: akatovda@yandex.com
 
-1. Enable advanced schedule mode for org-mode files:
+1. Enable org-tss-mode for org-mode files:
    #+begin_src emacs-lisp
-   (require 'org-advanced-schedule-mode)
-   (add-hook 'org-mode-hook #'org-advanced-schedule-mode)
+   (require 'org-tss-mode)
+   (add-hook 'org-mode-hook #'org-tss-mode)
    #+end_src
-2. Specify =ADVANCED_SCHEDULE= for headline you want to repeat:
-      #+begin_src org
-   ,* TODO Czech class
-     :PROPERTIES:
-     :ADVANCED_SCHEDULE: ["Mon 20:00-21:00" "Tue 20:00-21:00" "Thu 20:00-21:00"]
-     :END:
-   #+end_src
-3. Make it DONE and it should repeat on the earliest date:
+2. Enjoy. Now multiple timestamps will be repeated in earliest-first manner
    #+begin_src org
    ,* TODO Czech class
-     SCHEDULED: <2021-10-26 Tue 20:00-21:00>
-     :PROPERTIES:
-     :ADVANCED_SCHEDULE: ["Mon 20:00-21:00" "Tue 20:00-21:00" "Thu 20:00-21:00"]
-     :LAST_REPEAT: [2021-10-26 Tue 14:11]
-     :END:
-     :LOGBOOK:
-     - State "DONE"       from "TODO"       [2021-10-26 Tue 14:11]
-     :END:
+   <2020-01-13 Mon +1w>
+   <2020-01-15 Wed +1w>
+   #+end_src
+3. Make it DONE and it should repeat only the earliest date:
+   #+begin_src org
+   ,* TODO Czech class
+   :PROPERTIES:
+   :LAST_REPEAT: [2021-12-08 Wed 18:33]
+   :END:
+   :LOGBOOK:
+   - State "DONE"       from "TODO"       [2021-12-08 Wed 18:33]
+   - State "DONE"       from "TODO"       [2021-12-08 Wed 18:33]
+   :END:
+   <2020-01-20 Mon +1w>
+   <2020-01-15 Wed +1w>
    #+end_src
